@@ -17,10 +17,15 @@ def all_houses(filename):
 
     houses = set()
 
-    # TODO: replace this with your code
+    student_data_file = open(filename)
+    house = ""
 
+    for line in student_data_file:
+      house = line.rstrip().split("|")[2]
+      if house:
+        houses.add(house)
+    
     return houses
-
 
 def students_by_cohort(filename, cohort='All'):
     """Return a list of students' full names by cohort.
@@ -51,11 +56,19 @@ def students_by_cohort(filename, cohort='All'):
     """
 
     students = []
+    student_data_file = open(filename)
+    for line in student_data_file:
+      split_data = line.rstrip().split("|")
+      first_name = split_data[0]
+      last_name = split_data[1]
+      full_name = first_name + " " + last_name
+      student_cohort = split_data[4]
 
-    # TODO: replace this with your code
-
+      if student_cohort != "I" and student_cohort != "G":
+        if cohort == "All" or cohort == student_cohort:
+          students.append(full_name)
+    
     return sorted(students)
-
 
 def all_names_by_house(filename):
     """Return a list that contains rosters for all houses, ghosts, instructors.
@@ -88,6 +101,8 @@ def all_names_by_house(filename):
       - list[list]: a list of lists
     """
 
+    student_data_file = open(filename)
+
     dumbledores_army = []
     gryffindor = []
     hufflepuff = []
@@ -96,10 +111,27 @@ def all_names_by_house(filename):
     ghosts = []
     instructors = []
 
-    # TODO: replace this with your code
+    for line in student_data_file:
+      first_name, last_name, house, _, cohort = line.rstrip().split("|")
+      full_name = first_name + " " + last_name
+    
+      if house == "Dumbledore's Army":
+        dumbledores_army.append(full_name)
+      elif house == "Gryffindor":
+        gryffindor.append(full_name)
+      elif house == "Hufflepuff":
+        hufflepuff.append(full_name)
+      elif house == "Ravenclaw":
+        ravenclaw.append(full_name)
+      elif house == "Slytherin":
+        slytherin.append(full_name)
+      elif cohort == "G":
+        ghosts.append(full_name)
+      elif cohort == "I":
+          instructors.append(full_name)
 
-    return []
-
+    list_of_all_rosters = [sorted(dumbledores_army), sorted(gryffindor), sorted(hufflepuff), sorted(ravenclaw), sorted(slytherin), sorted(ghosts), sorted(instructors)]
+    return list_of_all_rosters
 
 def all_data(filename):
     """Return all the data in a file.
@@ -122,7 +154,13 @@ def all_data(filename):
 
     all_data = []
 
-    # TODO: replace this with your code
+    student_data_file = open(filename)
+
+    for line in student_data_file:
+        first_name, last_name, house, instructor, cohort = line.rstrip().split('|')
+        full_name = first_name + " " + last_name
+        student_tuple = (full_name, house, instructor, cohort)
+        all_data.append(student_tuple)
 
     return all_data
 
@@ -148,8 +186,11 @@ def get_cohort_for(filename, name):
       - str: the person's cohort or None
     """
 
-    # TODO: replace this with your code
+    sorted_student_data = all_data(filename)
 
+    for line in sorted_student_data:
+      if line[0] == name:
+        return line[3]
 
 def find_duped_last_names(filename):
     """Return a set of duplicated last names that exist in the data.
@@ -165,8 +206,20 @@ def find_duped_last_names(filename):
       - set[str]: a set of strings
     """
 
-    # TODO: replace this with your code
+    student_data_file = open(filename)
 
+    existing_names = set()
+    duplicate_names = set()
+
+    for line in student_data_file:
+      last_name = line.rstrip().split('|')[1]
+
+      if last_name in existing_names:
+        duplicate_names.add(last_name)
+
+      existing_names.add(last_name)
+
+    return duplicate_names
 
 def get_housemates_for(filename, name):
     """Return a set of housemates for the given student.
@@ -180,7 +233,22 @@ def get_housemates_for(filename, name):
     {'Angelina Johnson', ..., 'Seamus Finnigan'}
     """
 
-    # TODO: replace this with your code
+    housemates = set()
+
+
+    for student_tuple in all_data('cohort_data.txt'):
+      full_name, house, instructor, cohort = student_tuple
+      if full_name == name:
+        correct_person = student_tuple
+        correct_name, correct_house, correct_advisor, correct_cohort = correct_person
+
+    for student_tuple in all_data('cohort_data.txt'):
+      full_name, house, instructor, cohort = student_tuple
+      if(house == correct_house) and (cohort == correct_cohort) and full_name !=name:
+        housemates.add(full_name)
+
+    return housemates
+  
 
 
 ##############################################################################
